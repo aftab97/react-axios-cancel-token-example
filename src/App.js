@@ -1,23 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import axios from "axios";
 
 function App() {
+  let cancelToken;
+  let url = "https://candykabin.co.uk/api";
+
+  const handleType = async (e) => {
+    const search = e.target.value;
+    console.log(search);
+
+    if (typeof cancelToken !== "undefined") {
+      cancelToken.cancel("canceling the previous requests");
+    }
+
+    cancelToken = axios.CancelToken.source();
+
+    const result = await axios.get(`${url}/product/search?find=${search}`, {
+      cancelToken: cancelToken.token,
+    });
+
+    console.table(result.data);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input onChange={(e) => handleType(e)} placeholder="type here" />
     </div>
   );
 }
